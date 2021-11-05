@@ -1,4 +1,4 @@
-// Copyright 2019 DenisSlack
+// Copyright by C-developers1488
 
 #include <gtest/gtest.h>
 

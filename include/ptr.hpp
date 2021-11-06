@@ -12,9 +12,6 @@ auto example() -> void;
 
 template <typename T>
 class SharedPtr {
- private:
-  T* ptr;
-  std::atomic_uint* counter;
  public:
   SharedPtr();
   explicit SharedPtr(T* pointer);
@@ -61,6 +58,9 @@ class SharedPtr {
     r.counter = temp2;
   }
   auto use_count() const -> size_t;
+ private:
+  T* ptr;
+  std::atomic_uint* counter;
 };
 
 template <typename T>

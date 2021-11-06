@@ -8,7 +8,7 @@
 template<typename T>
 class SPCounter {
  public:
-  SPCounter(T* p) noexcept{
+  explicit SPCounter(T* p) noexcept{
     count = 1;
     ptr = p;
   }

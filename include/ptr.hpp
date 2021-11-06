@@ -12,6 +12,7 @@ auto example() -> void;
 
 template <typename T>
 class SharedPtr {
+ private:
   T* ptr;
   std::atomic_uint* counter;
  public:

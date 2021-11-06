@@ -1,5 +1,8 @@
 // Copyright by C-developers1488
 
+#ifndef INCLUDE_PTR_HPP_
+#define INCLUDE_PTR_HPP_
+
 #include <atomic>
 #include <cstdio>
 
@@ -130,3 +133,5 @@ template <typename T>
 auto SharedPtr<T>::use_count() const -> size_t {
   return (*count);
 }
+
+#endif // INCLUDE_PTR_HPP_

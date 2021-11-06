@@ -58,6 +58,7 @@ class SharedPtr {
     r.counter = temp2;
   }
   auto use_count() const -> size_t;
+
  private:
   T* ptr;
   std::atomic_uint* counter;

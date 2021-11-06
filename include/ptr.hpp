@@ -5,6 +5,7 @@
 
 #include <atomic>
 #include <cstdio>
+#include <utility>
 
 
 template <typename T>
@@ -14,7 +15,7 @@ class SharedPtr {
 
  public:
   SharedPtr();
-  SharedPtr(T* ptr);
+  SharedPtr(T* pointer);
   SharedPtr(const SharedPtr& r);
   SharedPtr(SharedPtr&& r);
   ~SharedPtr();
@@ -67,12 +68,12 @@ template <typename T>
 SharedPtr<T>::~SharedPtr()
 
 {
-  if (count) {
-    if (*count == 1) {
-      delete count;
-      delete ObPtr;
-    } else
-      (*count)--;
+  if ((*this->counter) < 2)
+  {
+    delete this->counter;
+  } else {
+    this->ptr = nullptr;
+    (*this->counter)--;
   }
 }
 
@@ -133,5 +134,6 @@ template <typename T>
 auto SharedPtr<T>::use_count() const -> size_t {
   return (*count);
 }
+
 
 #endif // INCLUDE_PTR_HPP_

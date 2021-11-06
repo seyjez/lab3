@@ -15,7 +15,7 @@ class SharedPtr {
 
  public:
   SharedPtr();
-  SharedPtr(T* ptr);
+  SharedPtr(T *ptr);
   SharedPtr(const SharedPtr& r);
   SharedPtr(SharedPtr&& r);
   ~SharedPtr();

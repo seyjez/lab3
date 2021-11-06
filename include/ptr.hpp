@@ -82,7 +82,7 @@ template <typename T>
 SharedPtr<T> SharedPtr<T>::operator=(const SharedPtr &r) {
   ObPtr = r.ObPtr;
   count = this->count;
-  *count++;
+  this->count++;
   return *this;
 }
 

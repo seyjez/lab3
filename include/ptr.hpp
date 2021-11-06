@@ -15,7 +15,7 @@ class SharedPtr {
 
  public:
   SharedPtr();
-  SharedPtr(T *ptr);
+  explicit SharedPtr(T *ptr);
   SharedPtr(const SharedPtr& r);
   SharedPtr(SharedPtr&& r);
   ~SharedPtr();
@@ -135,5 +135,5 @@ template <typename T>
 auto SharedPtr<T>::use_count() const -> size_t {
   return (*count);
 }
-
 #endif // INCLUDE_PTR_HPP_
+

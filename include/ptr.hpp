@@ -72,15 +72,16 @@ SharedPtr<T>::~SharedPtr()
     if (*count == 1) {
       delete count;
       delete ObPtr;
-    } else
+    } else {
       (*count)--;
+      }
   }
 }
 
 template <typename T>
 SharedPtr<T> SharedPtr<T>::operator=(const SharedPtr &r) {
   ObPtr = r.ObPtr;
-  count = r.count;
+  count = this->count;
   *count++;
   return *this;
 }

@@ -18,7 +18,7 @@ TEST(SharedPtr_Test, TestTwo) {
 
   SharedPtr<int> ptr1(p1);
   SharedPtr<int> ptr2(p2);
-  ptr2.swap(ptr1);
+  ptr2.swapPtr(ptr1);
   EXPECT_EQ(*ptr2.get(), 3);
   EXPECT_EQ(*ptr1.get(), 2);
 }

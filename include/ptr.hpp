@@ -23,7 +23,7 @@ class SharedPtr {
     ptr = p.release();
   }
   SharedPtr(const SharedPtr& r) {
-    if( std::is_move_constructible<T>::value){
+    if (std::is_move_constructible<T>::value){
       ptr = r.ptr;
       counter = r.counter;
       if (counter) {

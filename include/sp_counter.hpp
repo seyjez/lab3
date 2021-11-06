@@ -1,6 +1,6 @@
 // Copyright by C-developers1488
 
-#ifndef TINCLUDE_SP_COUNTER_HPP_
+#ifndef INCLUDE_SP_COUNTER_HPP_
 #define INCLUDE_SP_COUNTER_HPP_
 
 #include "ptr.hpp"
@@ -8,7 +8,7 @@
 template<typename T>
 class SPCounter {
  public:
-  SPCounter(T* p) noexcept{
+  explicit SPCounter(T* p) noexcept{
     count = 1;
     ptr = p;
   }
@@ -30,3 +30,4 @@ class SPCounter {
 };
 
 #endif  // INCLUDE_SP_COUNTER_HPP_
+

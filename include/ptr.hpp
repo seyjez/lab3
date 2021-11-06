@@ -68,12 +68,12 @@ template <typename T>
 SharedPtr<T>::~SharedPtr()
 
 {
-  if ((*this->counter) < 2)
-  {
-    delete this->counter;
-  } else {
-    this->ptr = nullptr;
-    (*this->counter)--;
+  if (count) {
+    if (*count == 1) {
+      delete count;
+      delete ObPtr;
+    } else
+      (*count)--;
   }
 }
 

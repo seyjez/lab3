@@ -32,3 +32,101 @@ class SharedPtr {
   auto use_count() const -> size_t;
 };
 
+template <typename T>
+SharedPtr<T>::SharedPtr() {
+  ObPtr = nullptr;
+  count = nullptr;
+}
+
+template <typename T>
+SharedPtr<T>::SharedPtr(T *ptr) {
+  ObPtr = ptr;
+  count = new std::atomic_uint(1);
+}
+
+template <typename T>
+SharedPtr<T>::SharedPtr(const SharedPtr &r) {
+  ObPtr = r.ObPtr;
+  count = r.count;
+  (*count)++;
+}
+
+template <typename T>
+SharedPtr<T>::SharedPtr(SharedPtr &&r)
+{
+  ObPtr = r.ObPtr;
+  count = r.count;
+  r.ObPtr = nullptr;
+  r.count = nullptr;
+}
+
+template <typename T>
+SharedPtr<T>::~SharedPtr()
+
+{
+  if (count) {
+    if (*count == 1) {
+      delete count;
+      delete ObPtr;
+    } else
+      (*count)--;
+  }
+}
+
+template <typename T>
+SharedPtr<T> SharedPtr<T>::operator=(const SharedPtr &r) {
+  ObPtr = r.ObPtr;
+  count = r.count;
+  *count++;
+  return *this;
+}
+
+template <typename T>
+SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr &&r) {
+  ObPtr = r.ObPtr;
+  count = r.count;
+  r.ObPtr = nullptr;
+  r.count = nullptr;
+  return *this;
+}
+
+template <typename T>
+SharedPtr<T>::operator bool() const {
+  return ObPtr != nullptr;
+}
+
+template <typename T>
+T &SharedPtr<T>::operator*() const {
+  return *ObPtr;
+}
+
+template <typename T>
+T *SharedPtr<T>::operator->() const {
+  return ObPtr;
+}
+
+template <typename T>
+auto SharedPtr<T>::get() -> T * {
+  return ObPtr;
+}
+
+template <typename T>
+void SharedPtr<T>::reset() {
+  *this = SharedPtr();
+}
+
+template <typename T>
+void SharedPtr<T>::reset(T *ptr) {
+  *this = SharedPtr(ptr);
+}
+
+template <typename T>
+void SharedPtr<T>::swap(SharedPtr &r) {
+  std::swap(ObPtr, r.ObPtr);
+  std::swap(count, r.count);
+}
+
+template <typename T>
+auto SharedPtr<T>::use_count() const -> size_t {
+  return (*count);
+}

@@ -1,7 +1,7 @@
 // Copyright by C-developers1488
 
-#ifndef TEMPLATE_SPCOUNTER_HPP
-#define TEMPLATE_SPCOUNTER_HPP
+#ifndef  INCLUDE_SPCOUNTER_HPP_
+#define INCLUDE_SPCOUNTER_HPP_
 
 #include "ptr.hpp"
 
@@ -29,4 +29,4 @@ class SPCounter {
   T* ptr;
 };
 
-#endif // TEMPLATE_SPCOUNTER_HPP
+#endif //  INCLUDE_SPCOUNTER_HPP_

@@ -1,36 +1,54 @@
 // Copyright by C-developers1488
 
+
 #include <gtest/gtest.h>
+#include <stdexcept>
 
 #include "ptr.hpp"
 
-
-TEST(SharedPtr_Test, TestOne) {
-  int* p = new int{2};
-  SharedPtr<int> ptr1(p);
-  EXPECT_EQ(*ptr1.get(), 2);
-  EXPECT_EQ(ptr1.get(), p);
+TEST(ptrTest, nullPtrTest) {
+  SharedPtr<size_t> a;
+  ASSERT_EQ(a.use_count(), 0);
 }
 
-TEST(SharedPtr_Test, TestTwo) {
-  int* p1 = new int{3};
-  int* p2 = new int{2};
-
-  SharedPtr<int> ptr1(p1);
-  SharedPtr<int> ptr2(p2);
-  ptr2.swapPtr(ptr1);
-  EXPECT_EQ(*ptr2.get(), 3);
-  EXPECT_EQ(*ptr1.get(), 2);
+TEST(ptrTest, swapPtrTest) {
+  struct Widget {
+    size_t in;
+    size_t out;
+  };
+  Widget widget1 = { 1, 2 };
+  Widget widget2 = { 2, 1 };
+  SharedPtr<Widget> a(&widget1);
+  SharedPtr<Widget> b(&widget2);
+  a.swapPtr(b);
+  ASSERT_EQ(a.get(), &widget2);
 }
 
-TEST(SharedPtr_Test, TestThree) {
-  int* p = new int{5};
+TEST(ptrTest, resetPtrTest) {
+  struct Widget {
+    size_t in;
+    size_t out;
+  };
+  Widget widget = { 1, 2 };
+  SharedPtr<Widget> a(&widget);
+  a.reset();
+  ASSERT_EQ(a.use_count(), 0);
+}
 
-  SharedPtr<int> ptr1(p);
+TEST(ptrTest, objectPtrTest) {
+  struct Widget {
+    size_t in;
+    size_t out;
+  };
+  Widget widget = { 0, 0 };
+  SharedPtr<Widget> a(&widget);
+  ASSERT_EQ(a.get(), &widget);
+}
 
-  ptr1.reset(p);
-  EXPECT_EQ(ptr1.get(), p);
-
-  ptr1.reset();
-  EXPECT_EQ(ptr1.get(), nullptr);
+TEST(ptrTest, sharedPtrTest) {
+  size_t in = 10;
+  SharedPtr<size_t> a(&in);
+  SharedPtr<size_t> b(a);
+  SharedPtr<size_t> c(b);
+  ASSERT_EQ(c.use_count(), 3);
 }

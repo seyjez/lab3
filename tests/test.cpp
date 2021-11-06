@@ -1,54 +1,76 @@
 // Copyright by C-developers1488
 
-
 #include <gtest/gtest.h>
-#include <stdexcept>
-
 #include "ptr.hpp"
 
-TEST(ptrTest, nullPtrTest) {
-  SharedPtr<size_t> a;
-  ASSERT_EQ(a.use_count(), 0);
+TEST(Example, EmptyTest) {
+  EXPECT_TRUE(true);
 }
-
-TEST(ptrTest, swapPtrTest) {
-  struct Widget {
-    size_t in;
-    size_t out;
+TEST(Test, Zerro) {
+  SharedPtr<int> sp;
+  EXPECT_EQ((sp),0);
+}
+TEST(Test, UseCount) {
+  int val = 5;
+  SharedPtr<int> sp1 (&val);
+  SharedPtr<int> sp2(sp1);
+  SharedPtr<int> sp3(sp2);
+  EXPECT_EQ(sp1.use_count(),3);
+}
+TEST(Test, Clas_Strelka) {
+  class Values{
+   public:
+    int val;
   };
-  Widget widget1 = { 1, 2 };
-  Widget widget2 = { 2, 1 };
-  SharedPtr<Widget> a(&widget1);
-  SharedPtr<Widget> b(&widget2);
-  a.swapPtr(b);
-  ASSERT_EQ(a.get(), &widget2);
+  Values val1;
+  val1.val=20;
+  SharedPtr<Values> sp5(&val1);
+  EXPECT_EQ(sp5->val,20);
 }
-
-TEST(ptrTest, resetPtrTest) {
-  struct Widget {
-    size_t in;
-    size_t out;
-  };
-  Widget widget = { 1, 2 };
-  SharedPtr<Widget> a(&widget);
-  a.reset();
-  ASSERT_EQ(a.use_count(), 0);
+TEST(Test, Zvezda) {
+  int val = 5, val2 = 30;
+  SharedPtr<int> sp1 (&val);
+  SharedPtr<int> sp2(sp1);
+  SharedPtr<int> sp3(sp2);
+  SharedPtr<int> spoz(&val2);
+  std::stringstream str;
+  str<<*sp1<<" "<<*sp2<<" "<<*sp3<<" "<<*spoz;
+  std::string stroka = "5 5 5 30";
+  EXPECT_EQ(str.str(), stroka);
 }
-
-TEST(ptrTest, objectPtrTest) {
-  struct Widget {
-    size_t in;
-    size_t out;
-  };
-  Widget widget = { 0, 0 };
-  SharedPtr<Widget> a(&widget);
-  ASSERT_EQ(a.get(), &widget);
+TEST(Test, Get) {
+  int val = 5, val2 = 30;
+  SharedPtr<int> sp1 (&val);
+  SharedPtr<int> sp2(sp1);
+  SharedPtr<int> sp3(sp2);
+  SharedPtr<int> spoz(&val2);
+  std::stringstream str, str2;
+  str<<*sp1.get()<<" "<<*sp2.get()<<" "<<*sp3.get()<<" "<<*spoz.get();
+  std::string stroka = "5 5 5 30";
+  EXPECT_EQ(str.str(), stroka);
 }
-
-TEST(ptrTest, sharedPtrTest) {
-  size_t in = 10;
-  SharedPtr<size_t> a(&in);
-  SharedPtr<size_t> b(a);
-  SharedPtr<size_t> c(b);
-  ASSERT_EQ(c.use_count(), 3);
+TEST(Test, Reset) {
+  int val = 5, val2 =30;
+  SharedPtr<int> sp1 (&val);
+  SharedPtr<int> sp2(sp1);
+  SharedPtr<int> sp3(sp2);
+  sp1.reset();
+  sp2.reset(&val2);
+  std::stringstream str;
+  str<<(sp1)<<" "<<*sp2;
+  std::string stroka = "0 30";
+  EXPECT_EQ(str.str(), stroka);
+}
+TEST(Test, Swap) {
+  int val = 5, val2 = 30;
+  SharedPtr<int> sp1 (&val);
+  SharedPtr<int> sp2(sp1);
+  SharedPtr<int> sp3(sp2);
+  SharedPtr<int> spoz(&val2);
+  std::stringstream str;
+  str<<*sp3<<" "<<*spoz;
+  sp3.swap(spoz);
+  str<<" "<<*sp3<<" "<<*spoz;
+  std::string stroka = "5 30 30 5";
+  EXPECT_EQ(str.str(), stroka);
 }

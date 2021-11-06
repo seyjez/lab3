@@ -3,137 +3,138 @@
 #ifndef INCLUDE_PTR_HPP_
 #define INCLUDE_PTR_HPP_
 
-#include <atomic>
-#include <cstdio>
+#include <string>
+#include <memory>
 #include <utility>
-
+#include <atomic>
+#include <fstream>
+#include "sp_counter.hpp"
+#include <iostream>
 
 template <typename T>
 class SharedPtr {
-  T* ObPtr;
-  std::atomic_uint* count;
-
  public:
-  SharedPtr();
-  explicit SharedPtr(T *ptr);
-  SharedPtr(const SharedPtr& r);
-  SharedPtr(SharedPtr&& r);
-  ~SharedPtr();
+  SharedPtr() noexcept {
+    ptr =nullptr;
+    counter = nullptr;
+  }
+  explicit SharedPtr(T* r) {
+    std::unique_ptr<T> p(r);
+    counter = new SPCounter<T>(p.get());
+    ptr = p.release();
+  }
+  SharedPtr(const SharedPtr& r) {
+    if(std::is_move_constructible<T>::value){
+      ptr = r.ptr;
+      counter = r.counter;
+      if(counter) {
+        counter->add();
+      }
+    } else {
+      throw std::runtime_error("Not constructible type!");
+    }
+  }
+  SharedPtr(SharedPtr&& r) {
+    if(std::is_move_assignable<T>::value) {
+      std::swap(ptr, r.ptr);
+      std::swap(counter, r.counter);
+    } else {
+      throw std::runtime_error("Not assignable type!");
+    }
+  }
+  ~SharedPtr() noexcept {
+    if(counter) {
+      counter->release();
+    }
+  }
+  auto operator=(const SharedPtr& r) -> SharedPtr& {
+    if(std::is_move_constructible<T>::value && &r !=this) {
+      if(counter) {
+        counter->realease();
+      }
+      ptr = r.ptr;
+      counter = r.counter;
+      if(counter) {
+        counter->add();
+      }
+    } else if(&r == this) {
+      std::cout << "Object equal to this\n";
+    } else {
+      throw std::runtime_error("Not constructible type!");
+    }
+    return *this;
+  }
+  auto operator=(SharedPtr&& r) -> SharedPtr& {
+    if(std::is_move_assignable<T>::value && &r !=this) {
+      if(counter) {
+        counter->realease();
+      }
+      ptr = r.ptr;
+      counter = r.counter;
+      if(counter) {
+        counter->add();
+      }
+    } else if(&r == this) {
+      std::cout << "Object equal to this\n";
+    } else {
+      throw std::runtime_error("Not assignable type!");
+    }
+    return *this;
+  }
 
-  SharedPtr<T> operator=(const SharedPtr& r);
-  SharedPtr<T>& operator=(SharedPtr&& r);
+  operator bool() const { return (ptr != nullptr); }
+  auto operator*() const -> T& { return *ptr; }
+  auto operator->() const -> T* { return ptr; }
 
-  operator bool() const;
-  T& operator*() const;
+  auto get() -> T* { return ptr; }
+  void reset() {
+    if(counter) {
+      if (counter->use_count() == 1) {
+        counter->release();
+      } else {
+        counter->unadd();
+      }
+    }
+    ptr = nullptr;
+    counter = nullptr;
+  }
+  void reset(T* r) {
+    if(counter) {
+      if (counter->use_count() == 1) {
+        counter->release();
+      } else {
+        counter->unadd();
+      }
+    }
+    ptr = r;
+    if(ptr == nullptr) {
+      counter = nullptr;
+    } else {
+      if(counter) {
+        counter->add();
+      } else {
+        std::unique_ptr<T> p(r);
+        counter = new SPCounter<T>(p.get());
+      }
+    }
 
-  T* operator->() const;
+  }
+  void swap(SharedPtr& r) {
+    std::swap(r.ptr, ptr);
+    std::swap(r.counter, counter);
+  }
+  size_t use_count() {
+    if(counter){
+      return counter->use_count();
+    }else {
+      return 0;
+    }
+  }
 
-  auto get() -> T*;
-  void reset();
-  void reset(T* ptr);
-  void swap(SharedPtr& r);
-
-  auto use_count() const -> size_t;
+ private:
+  T *ptr;
+  SPCounter<T>* counter;
 };
 
-template <typename T>
-SharedPtr<T>::SharedPtr() {
-  ObPtr = nullptr;
-  count = nullptr;
-}
-
-template <typename T>
-SharedPtr<T>::SharedPtr(T *ptr) {
-  ObPtr = ptr;
-  count = new std::atomic_uint(1);
-}
-
-template <typename T>
-SharedPtr<T>::SharedPtr(const SharedPtr &r) {
-  ObPtr = r.ObPtr;
-  count = r.count;
-  (*count)++;
-}
-
-template <typename T>
-SharedPtr<T>::SharedPtr(SharedPtr &&r)
-{
-  ObPtr = r.ObPtr;
-  count = r.count;
-  r.ObPtr = nullptr;
-  r.count = nullptr;
-}
-
-template <typename T>
-SharedPtr<T>::~SharedPtr()
-
-{
-  if (count) {
-    if (*count == 1) {
-      delete count;
-      delete ObPtr;
-    } else {
-      (*count)--;
-      }
-  }
-}
-
-template <typename T>
-SharedPtr<T> SharedPtr<T>::operator=(const SharedPtr &r) {
-  ObPtr = r.ObPtr;
-  count = this->count;
-  this->count++;
-  return *this;
-}
-
-template <typename T>
-SharedPtr<T> &SharedPtr<T>::operator=(SharedPtr &&r) {
-  ObPtr = r.ObPtr;
-  count = r.count;
-  r.ObPtr = nullptr;
-  r.count = nullptr;
-  return *this;
-}
-
-template <typename T>
-SharedPtr<T>::operator bool() const {
-  return ObPtr != nullptr;
-}
-
-template <typename T>
-T &SharedPtr<T>::operator*() const {
-  return *ObPtr;
-}
-
-template <typename T>
-T *SharedPtr<T>::operator->() const {
-  return ObPtr;
-}
-
-template <typename T>
-auto SharedPtr<T>::get() -> T * {
-  return ObPtr;
-}
-
-template <typename T>
-void SharedPtr<T>::reset() {
-  *this = SharedPtr();
-}
-
-template <typename T>
-void SharedPtr<T>::reset(T *ptr) {
-  *this = SharedPtr(ptr);
-}
-
-template <typename T>
-void SharedPtr<T>::swap(SharedPtr &r) {
-  std::swap(ObPtr, r.ObPtr);
-  std::swap(count, r.count);
-}
-
-template <typename T>
-auto SharedPtr<T>::use_count() const -> size_t {
-  return (*count);
-}
 #endif // INCLUDE_PTR_HPP_
 

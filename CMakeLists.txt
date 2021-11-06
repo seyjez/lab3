@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,23 +20,23 @@ HunterGate(
         SHA1 "95c47c92f68edb091b5d6d18924baabe02a6962a"
 )
 
-# TODO: rename project and delete this comment
-project(template VERSION 0.1.0)
+project(lab-03-shared-ptr)
 string(APPEND CMAKE_CXX_FLAGS " -pedantic -Werror -Wall -Wextra")
 string(APPEND CMAKE_CXX_FLAGS " -Wno-unused-command-line-argument")
 string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
 
+# new versions of cmake contain gtest search files
+# commented out to increase the build speed.
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
-        # enum your files and delete this comment
         ${CMAKE_CURRENT_SOURCE_DIR}/sources/shared_ptr.cpp
-        include/ptr.hpp)
+        )
 
 add_executable(demo
         ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
-        include/ptr.hpp sources/shared_ptr.cpp)
+        )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -47,9 +47,8 @@ target_link_libraries(demo ${PROJECT_NAME})
 
 if(BUILD_TESTS)
   add_executable(tests
-          # TODO: enum your files and delete this comment
           ${CMAKE_CURRENT_SOURCE_DIR}/tests/test.cpp
-          include/ptr.hpp sources/shared_ptr.cpp)
+          )
   target_link_libraries(tests ${PROJECT_NAME} GTest::gtest_main)
   enable_testing()
   add_test(NAME unit_tests COMMAND tests)

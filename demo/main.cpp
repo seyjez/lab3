@@ -1,4 +1,4 @@
-// Copyright by C-developers1488
+// Copyright by Enigma
 
 #include <iostream>
 

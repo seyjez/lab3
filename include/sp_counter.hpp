@@ -1,4 +1,4 @@
-// Copyright by C-developers1488
+// Copyright by Enigma
 
 #ifndef INCLUDE_SP_COUNTER_HPP_
 #define INCLUDE_SP_COUNTER_HPP_

@@ -69,7 +69,7 @@ TEST(Test, Swap) {
   SharedPtr<int> spoz(&val2);
   std::stringstream str;
   str<<*sp3<<" "<<*spoz;
-  sp3.swap(spoz);
+  sp3.swapPtr(spoz);
   str<<" "<<*sp3<<" "<<*spoz;
   std::string stroka = "5 30 30 5";
   EXPECT_EQ(str.str(), stroka);

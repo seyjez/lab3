@@ -1,4 +1,4 @@
-// Copyright by Enigma
+// Copyright by seyjez
 #ifndef INCLUDE_PTR_HPP_
 #define INCLUDE_PTR_HPP_
 
@@ -14,34 +14,34 @@ template <typename T>
 class SharedPtr {
  public:
   SharedPtr(){
-    this->ptr = nullptr;
-    this->counter = new std::atomic_uint;
+    ptr = nullptr;
+    counter = new std::atomic_uint;
     *this->counter = 0;
   }
 
   explicit SharedPtr(T* pointer){
-    this->counter = new std::atomic_uint;
-    this->ptr = pointer;
+    counter = new std::atomic_uint;
+    ptr = pointer;
     *this->counter = 1;
   }
 
   SharedPtr(const SharedPtr& r){
-    this->ptr = r.ptr;
-    this->counter = r.counter;
+    ptr = r.ptr;
+    counter = r.counter;
     (*this->counter)++;
   }
 
   SharedPtr(SharedPtr&& r){
-    this->ptr = std::move(r.ptr);
-    this->counter = std::move(r.counter);
+    ptr = std::move(r.ptr);
+    counter = std::move(r.counter);
   }
 
   ~SharedPtr(){
     if ((*this->counter) < 2)
     {
-      delete this->counter;
+      delete counter;
     } else {
-      this->ptr = nullptr;
+      ptr = nullptr;
       (*this->counter)--;
     }
   }
@@ -51,8 +51,8 @@ class SharedPtr {
     {
       (*this->counter)--;
     }
-    this->ptr = r.ptr;
-    this->counter = r.counter;
+    ptr = r.ptr;
+    counter = r.counter;
     (*this->counter)++;
     return *this;
   }
@@ -62,13 +62,13 @@ class SharedPtr {
     {
       (*this->counter)--;
     }
-    this->ptr = std::move(r.ptr);
-    this->counter = std::move(r.counter);
+    ptr = std::move(r.ptr);
+    counter = std::move(r.counter);
     return *this;
   }
 
   operator bool() const{
-    return (this->ptr != nullptr);
+    return (ptr != nullptr);
   }
 
   auto operator*() const -> T&{
@@ -76,11 +76,11 @@ class SharedPtr {
   }
 
   auto operator->() const -> T*{
-    return this->ptr;
+    return ptr;
   }
 
   auto get() -> T*{
-    return this->ptr;
+    return ptr;
   }
 
   void reset(){
@@ -88,10 +88,10 @@ class SharedPtr {
     {
       (*this->counter)--;
     } else {
-      delete this->counter;
+      delete counter;
     }
-    this->ptr = nullptr;
-    this->counter = new std::atomic_uint;
+    ptr = nullptr;
+    counter = new std::atomic_uint;
     *this->counter = 0;
   }
 
@@ -102,22 +102,22 @@ class SharedPtr {
     } else {
       delete this->counter;
     }
-    this->ptr = pointer;
-    this->counter = new std::atomic_uint;
+    ptr = pointer;
+    counter = new std::atomic_uint;
     *this->counter = 1;
   }
 
   void swapPtr(SharedPtr& r){
-    T* temp1 = this->ptr;
-    std::atomic_uint* temp2 = this->counter;
-    this->ptr = r.ptr;
-    this->counter = r.counter;
+    T* temp1 = ptr;
+    std::atomic_uint* temp2 = counter;
+    ptr = r.ptr;
+    counter = r.counter;
     r.ptr = temp1;
     r.counter = temp2;
   }
 
   auto use_count() const -> size_t{
-    if (this->counter == nullptr)
+    if (counter == nullptr)
     {
       return 0;
     } else {
